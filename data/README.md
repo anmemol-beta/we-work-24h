@@ -23,6 +23,9 @@ tz: America/New_York         # optional; defaults per person
 location: optional short location
 title: optional short title
 dummy: true                  # optional; marks the entry as a placeholder
+allDay: true                 # optional; renders "All day" instead of a time
+                             # and hides the sun/moon glyph. Use plain
+                             # YYYY-MM-DD for `date` when this is on.
 ---
 ```
 

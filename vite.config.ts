@@ -22,6 +22,7 @@ interface FrontMatter {
   location?: string;
   title?: string;
   dummy?: boolean;
+  allDay?: boolean;
 }
 
 interface Entry {
@@ -29,10 +30,15 @@ interface Entry {
   week: string;
   date: string;
   tz: string;
-  /** Hour 0-23 in `tz` at this entry's moment. */
+  /** Hour 0-23 in `tz` at this entry's moment. Meaningless when allDay. */
   hourInTz: number;
-  /** Absolute UTC milliseconds for sorting and moment clustering. */
+  /** Absolute UTC milliseconds for sorting and moment clustering.
+   *  All-day entries anchor at noon UTC of the date. */
   utcMillis: number;
+  /** "YYYY-MM-DD" extracted from the frontmatter date, used to render
+   *  all-day entries without timezone conversion. */
+  ymd: string;
+  allDay: boolean;
   location?: string;
   title?: string;
   bodyHtml: string;
@@ -146,20 +152,33 @@ function loadEntries(baseUrl: string): Entry[] {
     if (fm.dummy !== undefined && typeof fm.dummy !== "boolean") {
       throw new Error(`[entries] ${slug}: 'dummy' must be boolean if present`);
     }
+    if (fm.allDay !== undefined && typeof fm.allDay !== "boolean") {
+      throw new Error(`[entries] ${slug}: 'allDay' must be boolean if present`);
+    }
 
     const tz = fm.tz ?? HOME_TZ[fm.person];
     if (!isValidTz(tz)) {
       throw new Error(`[entries] ${slug}: invalid IANA timezone '${tz}'`);
     }
 
+    const allDay = fm.allDay === true;
     const dt = new Date(dateIso);
+    const ymd = dateIso.slice(0, 10);
+    // All-day entries anchor at noon UTC so two same-date entries (potentially
+    // in different tzs) cluster into the same "moment" cleanly.
+    const utcMillis = allDay
+      ? Date.parse(ymd + "T12:00:00Z")
+      : dt.getTime();
+
     return {
       person: fm.person,
       week: fm.week,
       date: dateIso,
       tz,
       hourInTz: hourInTz(dt, tz),
-      utcMillis: dt.getTime(),
+      utcMillis,
+      ymd,
+      allDay,
       location: fm.location,
       title: fm.title,
       bodyHtml: marked.parse(content.trim()) as string,

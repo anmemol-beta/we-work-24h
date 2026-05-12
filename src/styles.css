@@ -9,7 +9,6 @@
   --hunjun: #ff8a5b;
   --hyoungseo: #6aa9ff;
   --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
-  --tint-strength: 22%;
   --sun-color: #ffc861;
   --moon-color: #c5d1ec;
   color-scheme: dark;
@@ -24,7 +23,6 @@
   --hunjun: #d65a2a;
   --hyoungseo: #2f6ed0;
   --card-shadow: 0 1px 2px rgba(20, 22, 28, 0.04);
-  --tint-strength: 14%;
   --sun-color: #d6892a;
   --moon-color: #6a7da3;
   color-scheme: light;
@@ -272,11 +270,7 @@ a {
   font-size: 14px;
   line-height: 1.55;
   box-shadow: var(--card-shadow);
-  background: color-mix(
-    in srgb,
-    var(--time-tint, transparent) var(--tint-strength),
-    var(--bg-elev)
-  );
+  background: var(--bg-elev);
   overflow: hidden;
 }
 
@@ -286,32 +280,6 @@ a {
 
 .card--hyoungseo {
   border-right: 3px solid var(--hyoungseo);
-}
-
-/* ----- Time-of-day tints (hue only; bg-elev controls lightness) ----- */
-.card--time-deepnight {
-  --time-tint: #0a1233;
-}
-.card--time-dawn {
-  --time-tint: #6d3a5d;
-}
-.card--time-sunrise {
-  --time-tint: #d97a44;
-}
-.card--time-morning {
-  --time-tint: #e6c25c;
-}
-.card--time-midday {
-  --time-tint: #4a9ad0;
-}
-.card--time-afternoon {
-  --time-tint: #5cb098;
-}
-.card--time-sunset {
-  --time-tint: #cf5a2a;
-}
-.card--time-night {
-  --time-tint: #1d2858;
 }
 
 .card--dummy {

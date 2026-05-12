@@ -1,12 +1,13 @@
 ---
 person: hunjun
 week: 2024-W35
-date: 2024-08-28T18:00:00-04:00
+date: 2024-08-28
 tz: America/New_York
 location: Boston
 title: Met Hyoungseo
+allDay: true
 ---
 
-First time meeting Hyoungseo. Boston, late summer.
+First time meeting Hyoungseo in Boston. Late summer.
 
-(Approximate date — adjust if you remember the exact day.)
+(Approximate date — fix if a better one comes back.)

@@ -25,6 +25,8 @@ export interface Entry {
   bodyHtml: string;
   slug: string;
   dummy: boolean;
+  ymd: string;
+  allDay: boolean;
 }
 
 export interface Moment {

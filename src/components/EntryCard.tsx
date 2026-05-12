@@ -1,5 +1,5 @@
 import type { Entry } from "../lib/entries";
-import { formatLocal } from "../lib/time";
+import { formatLocal, formatYmd } from "../lib/time";
 import { CelestialGlyph } from "./CelestialGlyph";
 
 interface Props {
@@ -7,20 +7,20 @@ interface Props {
 }
 
 export function EntryCard({ entry }: Props) {
-  const localTime = formatLocal(entry.date, entry.tz);
-  const classes = [
-    "card",
-    `card--${entry.person}`,
-    `card--time-${entry.timeBucket}`,
-  ];
+  const classes = ["card", `card--${entry.person}`];
   if (entry.dummy) classes.push("card--dummy");
+  if (entry.allDay) classes.push("card--all-day");
+
+  const timeLabel = entry.allDay
+    ? `${formatYmd(entry.ymd)} · all day`
+    : formatLocal(entry.date, entry.tz);
 
   return (
     <article className={classes.join(" ")}>
-      <CelestialGlyph bucket={entry.timeBucket} />
+      {!entry.allDay && <CelestialGlyph bucket={entry.timeBucket} />}
       <header className="card__head">
-        <time dateTime={entry.date} className="card__time">
-          {localTime}
+        <time dateTime={entry.allDay ? entry.ymd : entry.date} className="card__time">
+          {timeLabel}
         </time>
         {entry.location && (
           <span className="card__location">{entry.location}</span>

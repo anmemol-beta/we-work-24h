@@ -10,6 +10,8 @@ declare module "virtual:entries" {
     utcMillis: number;
     location?: string;
     title?: string;
+    ymd: string;
+    allDay: boolean;
     bodyHtml: string;
     slug: string;
     dummy: boolean;
