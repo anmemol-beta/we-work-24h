@@ -104,6 +104,8 @@ function inferTzAt(
 }
 
 function clusterIntoMoments(weekEntries: Entry[]): Moment[] {
+  // Cluster oldest→newest so the 90-minute window walks forward in time,
+  // then reverse so the page reads newest-first (same direction as weeks).
   const sorted = [...weekEntries].sort((a, b) => a.utcMillis - b.utcMillis);
   const moments: Moment[] = [];
   let lastMs = -Infinity;
@@ -118,7 +120,7 @@ function clusterIntoMoments(weekEntries: Entry[]): Moment[] {
     }
     lastMs = e.utcMillis;
   }
-  return moments;
+  return moments.reverse();
 }
 
 export function groupByWeek(entries: Entry[]): WeekGroup[] {
