@@ -8,6 +8,7 @@ import { marked } from "marked";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ENTRIES_DIR = path.resolve(__dirname, "data/entries");
+const IMAGES_DIR = path.resolve(__dirname, "public/images");
 const VIRTUAL_ID = "virtual:entries";
 const RESOLVED_ID = "\0" + VIRTUAL_ID;
 const ENTRY_FILE_RE = /^\d{4}-W\d{1,2}-.*\.md$/;
@@ -62,8 +63,56 @@ function hourInTz(date: Date, tz: string): number {
   return parseInt(fmt.format(date), 10);
 }
 
-function loadEntries(): Entry[] {
+function escapeAttr(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function resolveImageHref(
+  href: string,
+  slug: string,
+  baseUrl: string,
+): string {
+  // External URLs pass through untouched.
+  if (/^(https?:)?\/\//.test(href) || href.startsWith("data:")) return href;
+  // Site-absolute paths get the base prefix.
+  if (href.startsWith("/")) {
+    return baseUrl.replace(/\/$/, "") + href;
+  }
+  // Otherwise it's a local image — must live under public/images/.
+  const filename = href.replace(/^\.?\//, "");
+  if (filename.includes("..")) {
+    throw new Error(
+      `[entries] ${slug}: image '${href}' must not contain '..'`,
+    );
+  }
+  const filepath = path.join(IMAGES_DIR, filename);
+  if (!fs.existsSync(filepath)) {
+    throw new Error(
+      `[entries] ${slug}: referenced image not found: public/images/${filename}`,
+    );
+  }
+  return baseUrl.replace(/\/$/, "") + "/images/" + filename;
+}
+
+function configureMarked(slug: string, baseUrl: string) {
   marked.setOptions({ gfm: true, breaks: true });
+  marked.use({
+    renderer: {
+      image(token) {
+        const { href, title, text } = token;
+        const resolved = resolveImageHref(href, slug, baseUrl);
+        const titleAttr = title ? ` title="${escapeAttr(title)}"` : "";
+        return `<img src="${escapeAttr(resolved)}" alt="${escapeAttr(text)}"${titleAttr} loading="lazy">`;
+      },
+    },
+  });
+}
+
+function loadEntries(baseUrl: string): Entry[] {
   const files = fs
     .readdirSync(ENTRIES_DIR)
     .filter((f) => ENTRY_FILE_RE.test(f));
@@ -72,6 +121,8 @@ function loadEntries(): Entry[] {
     const raw = fs.readFileSync(path.join(ENTRIES_DIR, file), "utf-8");
     const { data, content } = matter(raw);
     const fm = data as FrontMatter;
+    // Reconfigure marked per entry so image href errors blame the right slug.
+    configureMarked(slug, baseUrl);
 
     // Fail-fast validation — any of these throws halts the build.
     if (!fm.person) throw new Error(`[entries] ${slug}: missing 'person'`);
@@ -119,25 +170,33 @@ function loadEntries(): Entry[] {
 }
 
 function entriesPlugin(): Plugin {
+  let baseUrl = "/";
   return {
     name: "we-work-24h:entries",
+    configResolved(config) {
+      baseUrl = config.base;
+    },
     resolveId(id) {
       if (id === VIRTUAL_ID) return RESOLVED_ID;
       return null;
     },
     load(id) {
       if (id !== RESOLVED_ID) return null;
-      const entries = loadEntries();
+      const entries = loadEntries(baseUrl);
       return `export default ${JSON.stringify(entries)};`;
     },
     configureServer(server) {
       const invalidate = (file: string) => {
-        if (!file.startsWith(ENTRIES_DIR) || !file.endsWith(".md")) return;
+        const isEntry =
+          file.startsWith(ENTRIES_DIR) && file.endsWith(".md");
+        const isImage = file.startsWith(IMAGES_DIR);
+        if (!isEntry && !isImage) return;
         const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
         if (mod) server.moduleGraph.invalidateModule(mod);
         server.ws.send({ type: "full-reload" });
       };
       server.watcher.add(ENTRIES_DIR);
+      server.watcher.add(IMAGES_DIR);
       server.watcher.on("change", invalidate);
       server.watcher.on("add", invalidate);
       server.watcher.on("unlink", invalidate);

@@ -10,6 +10,8 @@
   --hyoungseo: #6aa9ff;
   --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
   --tint-strength: 22%;
+  --sun-color: #ffc861;
+  --moon-color: #c5d1ec;
   color-scheme: dark;
 }
 
@@ -23,6 +25,8 @@
   --hyoungseo: #2f6ed0;
   --card-shadow: 0 1px 2px rgba(20, 22, 28, 0.04);
   --tint-strength: 14%;
+  --sun-color: #d6892a;
+  --moon-color: #6a7da3;
   color-scheme: light;
 }
 
@@ -261,6 +265,7 @@ a {
 
 /* ---------- Cards ---------- */
 .card {
+  position: relative;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 14px 16px;
@@ -272,6 +277,7 @@ a {
     var(--time-tint, transparent) var(--tint-strength),
     var(--bg-elev)
   );
+  overflow: hidden;
 }
 
 .card--hunjun {
@@ -332,9 +338,87 @@ a {
   gap: 8px 12px;
   align-items: baseline;
   margin-bottom: 8px;
+  padding-right: 30px; /* reserve room for the celestial glyph */
   color: var(--muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Celestial glyph (sun / moon) ---------- */
+.glyph {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.glyph--sun {
+  color: var(--sun-color);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--sun-color) 55%, transparent));
+}
+
+.glyph--moon {
+  color: var(--moon-color);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--moon-color) 45%, transparent));
+}
+
+.glyph__body {
+  fill: currentColor;
+}
+
+.glyph--sun .glyph__rays line {
+  transform-origin: 12px 12px;
+  animation: glyph-ray 2.6s ease-in-out infinite;
+}
+.glyph--sun .glyph__rays line:nth-of-type(1) { animation-delay: 0s; }
+.glyph--sun .glyph__rays line:nth-of-type(2) { animation-delay: 0.6s; }
+.glyph--sun .glyph__rays line:nth-of-type(3) { animation-delay: 1.2s; }
+.glyph--sun .glyph__rays line:nth-of-type(4) { animation-delay: 1.8s; }
+.glyph--sun .glyph__rays line:nth-of-type(5) { animation-delay: 0.3s; }
+.glyph--sun .glyph__rays line:nth-of-type(6) { animation-delay: 0.9s; }
+.glyph--sun .glyph__rays line:nth-of-type(7) { animation-delay: 1.5s; }
+.glyph--sun .glyph__rays line:nth-of-type(8) { animation-delay: 2.1s; }
+
+.glyph--sun .glyph__body {
+  animation: glyph-pulse 3.2s ease-in-out infinite;
+  transform-origin: 12px 12px;
+  transform-box: fill-box;
+}
+
+.glyph--moon .glyph__stars circle {
+  animation: glyph-twinkle 2.8s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.glyph--moon .glyph__stars circle:nth-of-type(1) { animation-delay: 0s; }
+.glyph--moon .glyph__stars circle:nth-of-type(2) { animation-delay: 0.9s; }
+.glyph--moon .glyph__stars circle:nth-of-type(3) { animation-delay: 1.7s; }
+
+@keyframes glyph-ray {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes glyph-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes glyph-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.65); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glyph__rays line,
+  .glyph__stars circle,
+  .glyph--sun .glyph__body {
+    animation: none;
+    opacity: 0.85;
+    transform: none;
+  }
 }
 
 .card__time {
@@ -376,6 +460,31 @@ a {
   color: var(--fg);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+.card__body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+
+.card__body figure {
+  margin: 10px 0;
+}
+
+.card__body figure img {
+  margin: 0;
+}
+
+.card__body figure figcaption {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
 }
 
 /* ---------- Mobile: stack columns, hide spines ---------- */

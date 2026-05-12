@@ -1,5 +1,6 @@
 import type { Entry } from "../lib/entries";
 import { formatLocal } from "../lib/time";
+import { CelestialGlyph } from "./CelestialGlyph";
 
 interface Props {
   entry: Entry;
@@ -16,6 +17,7 @@ export function EntryCard({ entry }: Props) {
 
   return (
     <article className={classes.join(" ")}>
+      <CelestialGlyph bucket={entry.timeBucket} />
       <header className="card__head">
         <time dateTime={entry.date} className="card__time">
           {localTime}

@@ -39,6 +39,18 @@ Entries within ±90 minutes of each other (regardless of side) are clustered
 into a single "moment" and rendered on the same horizontal row, so
 contemporaneous events line up across the two columns.
 
+## Images
+
+Photos live in [`../public/images/`](../public/images). Reference them from
+markdown with the filename only:
+
+```markdown
+![alt text](photo.jpg)
+```
+
+The build plugin rewrites the `src` to include the GitHub Pages base prefix
+and fails the build if the file does not exist.
+
 Entries with `dummy: true` are rendered with a dashed border, a small
 "placeholder" badge, and trigger a banner at the top of the page. Drop the
 field (or set it to `false`) once you write real content.
