@@ -7,7 +7,5 @@ title: HackPrinceton — Flanner
 allDay: true
 ---
 
-![Countryside view from the road](general/scene/train_window_countryside_realvis_seed42.png)
-
 Rented a car and drove down to Princeton with Hyoungseo. Drove back.
 1st in the Knot API track.

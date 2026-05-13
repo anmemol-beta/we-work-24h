@@ -8,7 +8,7 @@ title: Met Hyoungseo
 allDay: true
 ---
 
-![A cafe in Boston](general/scene/cafe_interior_warm_realvis_seed42.png)
+![A cafe in Boston](general/scene/cafe_interior_warm_playground_seed42.png)
 
 First time meeting Hyoungseo in Boston. Late summer.
 

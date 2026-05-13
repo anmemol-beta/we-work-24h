@@ -7,6 +7,4 @@ title: Zerve × ODSC datathon
 allDay: true
 ---
 
-![Rainy street lights](general/scene/rainy_street_lights_realvis_seed42.png)
-
 (Fill in what we did.)
