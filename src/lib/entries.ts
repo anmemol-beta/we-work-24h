@@ -45,6 +45,27 @@ export interface WeekGroup {
   moments: Moment[];
 }
 
+export interface YearGroup {
+  year: string;
+  weeks: WeekGroup[];
+}
+
+export function groupByYear(weeks: WeekGroup[]): YearGroup[] {
+  const byYear = new Map<string, WeekGroup[]>();
+  for (const w of weeks) {
+    const year = w.week.split("-")[0];
+    let list = byYear.get(year);
+    if (!list) {
+      list = [];
+      byYear.set(year, list);
+    }
+    list.push(w);
+  }
+  return [...byYear.entries()]
+    .map(([year, list]) => ({ year, weeks: list }))
+    .sort((a, b) => b.year.localeCompare(a.year));
+}
+
 const HOME_TZ: Record<Person, string> = {
   hunjun: "Asia/Seoul",
   hyoungseo: "America/New_York",

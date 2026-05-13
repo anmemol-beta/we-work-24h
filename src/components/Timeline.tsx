@@ -1,21 +1,30 @@
-import type { Moment, WeekGroup } from "../lib/entries";
+import type { Moment, WeekGroup, YearGroup } from "../lib/entries";
 import { prettyWeek } from "../lib/time";
 import { EntryCard } from "./EntryCard";
 
 interface Props {
-  weeks: WeekGroup[];
+  years: YearGroup[];
 }
 
-export function Timeline({ weeks }: Props) {
-  if (weeks.length === 0) {
+export function Timeline({ years }: Props) {
+  if (years.length === 0) {
     return <p className="empty">No entries yet.</p>;
   }
   return (
-    <ol className="timeline">
-      {weeks.map((w) => (
-        <WeekBlock key={w.week} week={w} />
+    <div className="timeline">
+      {years.map((y) => (
+        <section key={y.year} className="year">
+          <h2 className="year__head">
+            <span className="year__head-num">{y.year}</span>
+          </h2>
+          <ol className="year__weeks">
+            {y.weeks.map((w) => (
+              <WeekBlock key={w.week} week={w} />
+            ))}
+          </ol>
+        </section>
       ))}
-    </ol>
+    </div>
   );
 }
 
@@ -27,9 +36,6 @@ function WeekBlock({ week }: { week: WeekGroup }) {
         <span className="week__label-text">{prettyWeek(week.week)}</span>
         <span className="week__range">
           {week.start} → {week.end}
-        </span>
-        <span className={`week__status week__status--${week.together ? "together" : "apart"}`}>
-          {week.together ? "together" : "apart"}
         </span>
       </div>
       <div className="week__grid">
@@ -51,6 +57,7 @@ function MomentRow({ moment }: { moment: Moment }) {
           <EntryCard key={e.slug} entry={e} />
         ))}
       </div>
+      <span className="moment__node" aria-hidden />
       <div className="moment__col moment__col--hyoungseo">
         {moment.hyoungseo.map((e) => (
           <EntryCard key={e.slug} entry={e} />

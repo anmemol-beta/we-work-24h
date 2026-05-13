@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { groupByWeek, loadAllEntries } from "./lib/entries";
+import { groupByWeek, groupByYear, loadAllEntries } from "./lib/entries";
 import { Timeline } from "./components/Timeline";
 
 export default function App() {
   const entries = useMemo(() => loadAllEntries(), []);
   const weeks = useMemo(() => groupByWeek(entries), [entries]);
+  const years = useMemo(() => groupByYear(weeks), [weeks]);
   const allDummy = entries.length > 0 && entries.every((e) => e.dummy);
   const someDummy = entries.some((e) => e.dummy);
 
@@ -32,7 +33,7 @@ export default function App() {
           </span>
         </div>
       )}
-      <Timeline weeks={weeks} />
+      <Timeline years={years} />
       <footer className="app__footer">
         UTC+9 ⇄ UTC−4 · 13h apart
       </footer>
