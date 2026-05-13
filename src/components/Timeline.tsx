@@ -52,16 +52,39 @@ function WeekBlock({ week }: { week: WeekGroup }) {
 function MomentRow({ moment }: { moment: Moment }) {
   return (
     <div className="moment">
-      <div className="moment__col moment__col--hunjun">
-        {moment.hunjun.map((e) => (
-          <EntryCard key={e.slug} entry={e} />
-        ))}
-      </div>
-      <span className="moment__node" aria-hidden />
-      <div className="moment__col moment__col--hyoungseo">
-        {moment.hyoungseo.map((e) => (
-          <EntryCard key={e.slug} entry={e} />
-        ))}
+      {moment.sharedImage && (
+        <figure className="moment__image">
+          <img
+            src={moment.sharedImage.src}
+            alt={moment.sharedImage.alt}
+            loading="lazy"
+          />
+        </figure>
+      )}
+      <div className="moment__pair">
+        <div className="moment__col moment__col--hunjun">
+          {moment.hunjun.map((e) => (
+            <div
+              key={e.slug}
+              className="moment__cell"
+              style={{ marginTop: e.offsetPx }}
+            >
+              <EntryCard entry={e} />
+            </div>
+          ))}
+        </div>
+        <span className="moment__node" aria-hidden />
+        <div className="moment__col moment__col--hyoungseo">
+          {moment.hyoungseo.map((e) => (
+            <div
+              key={e.slug}
+              className="moment__cell"
+              style={{ marginTop: e.offsetPx }}
+            >
+              <EntryCard entry={e} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

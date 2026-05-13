@@ -30,9 +30,19 @@ export interface Entry {
   overlay?: string;
 }
 
+export interface PositionedEntry extends Entry {
+  /** Vertical offset in pixels relative to the moment's anchor (oldest entry).
+   *  Used so two entries hours apart within the same moment can read as
+   *  "close but not simultaneous" instead of stacking on the same line. */
+  offsetPx: number;
+}
+
 export interface Moment {
-  hunjun: Entry[];
-  hyoungseo: Entry[];
+  hunjun: PositionedEntry[];
+  hyoungseo: PositionedEntry[];
+  /** If both columns reference the same body image, hoist it here and strip
+   *  it from each entry's bodyHtml — render once between the cards. */
+  sharedImage?: { src: string; alt: string };
   /** Used as a stable React key. */
   id: string;
 }
@@ -73,7 +83,22 @@ const HOME_TZ: Record<Person, string> = {
 };
 
 /** Within this window two events are considered "the same moment". */
-const MOMENT_TOLERANCE_MS = 90 * 60 * 1000;
+const MOMENT_TOLERANCE_MS = 6 * 60 * 60 * 1000;
+/** Vertical offset applied within a moment for entries later than the anchor. */
+const OFFSET_PX_PER_HOUR = 14;
+
+const FIRST_IMG_RE = /<img\s+src="([^"]+)"\s+alt="([^"]*)"[^>]*>/;
+const FIRST_IMG_PARAGRAPH_RE =
+  /<p>\s*<img\s+src="[^"]+"[^>]*>\s*<\/p>\s*/;
+
+function firstImage(html: string): { src: string; alt: string } | null {
+  const m = html.match(FIRST_IMG_RE);
+  return m ? { src: m[1], alt: m[2] } : null;
+}
+
+function stripFirstImageParagraph(html: string): string {
+  return html.replace(FIRST_IMG_PARAGRAPH_RE, "");
+}
 
 function bucketOfHour(hour: number): TimeBucket {
   if (hour < 4) return "deepnight";
@@ -126,21 +151,49 @@ function inferTzAt(
 }
 
 function clusterIntoMoments(weekEntries: Entry[]): Moment[] {
-  // Cluster oldest→newest so the 90-minute window walks forward in time,
-  // then reverse so the page reads newest-first (same direction as weeks).
+  // Walk oldest→newest to form clusters by the tolerance window, then
+  // anchor each cluster at its newest entry so later entries sit at the
+  // top — same direction as weeks/years on the page.
   const sorted = [...weekEntries].sort((a, b) => a.utcMillis - b.utcMillis);
-  const moments: Moment[] = [];
+  const groups: Entry[][] = [];
   let lastMs = -Infinity;
-  let current: Moment | null = null;
   for (const e of sorted) {
-    if (current && e.utcMillis - lastMs < MOMENT_TOLERANCE_MS) {
-      current[e.person].push(e);
-    } else {
-      current = { id: `${e.slug}-anchor`, hunjun: [], hyoungseo: [] };
-      current[e.person].push(e);
-      moments.push(current);
+    if (groups.length === 0 || e.utcMillis - lastMs >= MOMENT_TOLERANCE_MS) {
+      groups.push([]);
     }
+    groups[groups.length - 1].push(e);
     lastMs = e.utcMillis;
+  }
+  const moments: Moment[] = groups.map((group) => {
+    const anchorMs = group[group.length - 1].utcMillis;
+    const moment: Moment = {
+      id: `${group[group.length - 1].slug}-anchor`,
+      hunjun: [],
+      hyoungseo: [],
+    };
+    for (const e of group) {
+      const offsetPx =
+        ((anchorMs - e.utcMillis) / 3_600_000) * OFFSET_PX_PER_HOUR;
+      moment[e.person].push({ ...e, offsetPx });
+    }
+    moment.hunjun.sort((a, b) => b.utcMillis - a.utcMillis);
+    moment.hyoungseo.sort((a, b) => b.utcMillis - a.utcMillis);
+    return moment;
+  });
+  for (const m of moments) {
+    const huImg = m.hunjun[0] ? firstImage(m.hunjun[0].bodyHtml) : null;
+    const hyImg = m.hyoungseo[0] ? firstImage(m.hyoungseo[0].bodyHtml) : null;
+    if (huImg && hyImg && huImg.src === hyImg.src) {
+      m.sharedImage = huImg;
+      m.hunjun = m.hunjun.map((e) => ({
+        ...e,
+        bodyHtml: stripFirstImageParagraph(e.bodyHtml),
+      }));
+      m.hyoungseo = m.hyoungseo.map((e) => ({
+        ...e,
+        bodyHtml: stripFirstImageParagraph(e.bodyHtml),
+      }));
+    }
   }
   return moments.reverse();
 }

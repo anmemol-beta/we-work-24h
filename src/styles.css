@@ -294,10 +294,35 @@ a {
 
 /* ----- Moment rows ----- */
 .moment {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.moment__pair {
   display: grid;
   grid-template-columns: 1fr var(--gap) 1fr;
   align-items: start;
   position: relative;
+}
+
+.moment__image {
+  margin: 0 auto;
+  max-width: min(var(--col-width), 100%);
+  width: 100%;
+}
+
+.moment__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+
+.moment__cell {
+  min-width: 0;
 }
 
 .moment__col {
@@ -372,7 +397,7 @@ a {
   background: var(--bg-elev-strong);
 }
 
-.moment:has(.card:hover) .moment__node {
+.moment__pair:has(.card:hover) .moment__node {
   background: var(--fg);
   transform: translateX(-50%) scale(1.35);
 }
@@ -620,9 +645,12 @@ a {
   .week__grid {
     max-width: none;
   }
-  .moment {
+  .moment__pair {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+  .moment__cell {
+    margin-top: 0 !important;
   }
   .week__spine,
   .moment__node {
