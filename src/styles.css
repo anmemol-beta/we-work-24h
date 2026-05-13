@@ -377,6 +377,33 @@ a {
   transform: translateX(-50%) scale(1.35);
 }
 
+/* Decorative image overlapping the top-right corner of the card,
+   extending outside the card boundary. Fully opaque so the plane reads
+   as a solid object flying past, not a watermark. The owning card
+   switches to overflow: visible so the overflow renders. */
+.card--with-overlay {
+  overflow: visible;
+  min-height: 160px;
+}
+
+.card__overlay {
+  position: absolute;
+  top: -55%;
+  right: -22%;
+  width: 70%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 5;
+  transform: rotate(-15deg);
+  transform-origin: center center;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.4));
+}
+
+[data-theme="light"] .card__overlay {
+  filter: drop-shadow(0 10px 22px rgba(60, 50, 30, 0.28));
+}
+
 .card--hunjun {
   border-left: 3px solid var(--hunjun);
 }

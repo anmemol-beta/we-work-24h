@@ -7,4 +7,6 @@ title: YHack — Booky
 allDay: true
 ---
 
+![Library shelves](general/scene/library_shelves_warm_playground_seed42.png)
+
 (Fill in what we did.)

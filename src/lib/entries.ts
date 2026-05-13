@@ -27,6 +27,7 @@ export interface Entry {
   dummy: boolean;
   ymd: string;
   allDay: boolean;
+  overlay?: string;
 }
 
 export interface Moment {

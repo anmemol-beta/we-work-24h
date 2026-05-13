@@ -7,4 +7,6 @@ title: Next-Gen Hacks Beta — MotZip
 allDay: true
 ---
 
+![Neon-lit night street](general/scene/city_neon_night_playground_seed42.png)
+
 (Fill in what we did.)

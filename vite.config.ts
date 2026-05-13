@@ -23,6 +23,7 @@ interface FrontMatter {
   title?: string;
   dummy?: boolean;
   allDay?: boolean;
+  overlay?: string;
 }
 
 interface Entry {
@@ -44,6 +45,7 @@ interface Entry {
   bodyHtml: string;
   slug: string;
   dummy: boolean;
+  overlay?: string;
 }
 
 const HOME_TZ = {
@@ -170,6 +172,14 @@ function loadEntries(baseUrl: string): Entry[] {
       ? Date.parse(ymd + "T12:00:00Z")
       : dt.getTime();
 
+    let overlay: string | undefined;
+    if (fm.overlay !== undefined) {
+      if (typeof fm.overlay !== "string") {
+        throw new Error(`[entries] ${slug}: 'overlay' must be a string if present`);
+      }
+      overlay = resolveImageHref(fm.overlay, slug, baseUrl);
+    }
+
     return {
       person: fm.person,
       week: fm.week,
@@ -184,6 +194,7 @@ function loadEntries(baseUrl: string): Entry[] {
       bodyHtml: marked.parse(content.trim()) as string,
       slug,
       dummy: fm.dummy === true,
+      overlay,
     };
   });
 }

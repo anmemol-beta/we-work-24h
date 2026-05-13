@@ -15,8 +15,13 @@ export function EntryCard({ entry }: Props) {
     ? `${formatYmd(entry.ymd)} · all day`
     : formatLocal(entry.date, entry.tz);
 
+  if (entry.overlay) classes.push("card--with-overlay");
+
   return (
     <article className={classes.join(" ")}>
+      {entry.overlay && (
+        <img className="card__overlay" src={entry.overlay} alt="" aria-hidden="true" />
+      )}
       {!entry.allDay && <CelestialGlyph bucket={entry.timeBucket} />}
       <header className="card__head">
         <time dateTime={entry.allDay ? entry.ymd : entry.date} className="card__time">
