@@ -12,3 +12,5 @@ runtime with 10 Zod-typed tools, the happy-path test against in-memory
 MongoDB, and a minimal HTML chat UI to demo.
 
 He flies back tomorrow. Tonight we ship.
+
+- [GitHub](https://github.com/Shinhunjun/tripsync)

@@ -7,4 +7,10 @@ title: Next-Gen Hacks Beta — MotZip
 allDay: true
 ---
 
-(Fill in what we did.)
+Wrapped MotZip with Hunjun and pushed the submission in the early
+hours of the 27th.
+
+[Demo](https://youtu.be/a8UhKh7S4FU)
+
+- [Live demo](https://motzip.vercel.app/)
+- [GitHub](https://github.com/son-engr-kr/next-gen-hacks-beta)

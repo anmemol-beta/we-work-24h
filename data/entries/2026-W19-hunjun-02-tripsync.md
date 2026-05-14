@@ -14,3 +14,5 @@ Agent Builder + MongoDB MCP.
 
 Last night in Boston before flying home. Renamed it from Trippo to Tripsync
 right at the wire.
+
+- [GitHub](https://github.com/Shinhunjun/tripsync)
