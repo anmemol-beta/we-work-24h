@@ -534,6 +534,17 @@ a {
   background: var(--bg-elev);
 }
 
+.card__body .video-embed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin: 10px 0;
+  background: var(--bg-elev);
+}
+
 .card__body figure {
   margin: 10px 0;
 }

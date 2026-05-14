@@ -106,6 +106,20 @@ function resolveImageHref(
   return baseUrl.replace(/\/$/, "") + "/images/" + filename;
 }
 
+const YT_PATTERNS = [
+  /^https?:\/\/youtu\.be\/([\w-]{11})/,
+  /^https?:\/\/(?:www\.)?youtube\.com\/watch\?(?:.*&)?v=([\w-]{11})/,
+  /^https?:\/\/(?:www\.)?youtube\.com\/embed\/([\w-]{11})/,
+];
+
+function extractYouTubeId(href: string): string | null {
+  for (const re of YT_PATTERNS) {
+    const m = href.match(re);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 function configureMarked(slug: string, baseUrl: string) {
   marked.setOptions({ gfm: true, breaks: true });
   marked.use({
@@ -115,6 +129,18 @@ function configureMarked(slug: string, baseUrl: string) {
         const resolved = resolveImageHref(href, slug, baseUrl);
         const titleAttr = title ? ` title="${escapeAttr(title)}"` : "";
         return `<img src="${escapeAttr(resolved)}" alt="${escapeAttr(text)}"${titleAttr} loading="lazy">`;
+      },
+      link(token) {
+        const ytId = extractYouTubeId(token.href);
+        if (ytId) {
+          const titleAttr = token.title
+            ? ` title="${escapeAttr(token.title)}"`
+            : token.text
+            ? ` title="${escapeAttr(token.text)}"`
+            : "";
+          return `<iframe class="video-embed" src="https://www.youtube.com/embed/${ytId}"${titleAttr} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+        }
+        return false;
       },
     },
   });
