@@ -9,5 +9,5 @@ allDay: true
 ---
 
 IBM Bob hackathon kicked off. First thing was an idea meeting with
-Hyoungseo — me back in Seoul now, her in Boston. Still wide open, no
+Hyoungseo — me back in Seoul now, him in Boston. Still wide open, no
 idea yet what we're building.

@@ -9,7 +9,7 @@ allDay: true
 ---
 
 Submitted the IBM Bob hackathon with Hyoungseo. Two days from a
-blank idea meeting to a shipped build — me in Seoul, her in Boston
+blank idea meeting to a shipped build — me in Seoul, him in Boston
 the whole way.
 
 [Demo](https://www.youtube.com/watch?v=qypKveZOOus)
